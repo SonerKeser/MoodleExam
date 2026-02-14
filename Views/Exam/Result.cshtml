@@ -1,0 +1,192 @@
+﻿@model Userexam
+@{
+    Dictionary<string, double> statistics = new();
+    foreach (var item in Model.Score.Split('|'))
+    {
+        string[] scores = item.Split('=');
+        statistics[scores[0]] = double.Parse(scores[1]);
+    }
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-check" style="color:limegreen"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Doğru</span>
+                            <h3 class="card-title text-nowrap mb-2">@statistics["D"]</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-x" style="color:red"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Yanlış</span>
+                            <h3 class="card-title text-nowrap mb-2">@statistics["Y"]</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-file-blank" style="color:dodgerblue"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Boş</span>
+                            <h3 class="card-title text-nowrap mb-2">@statistics["B"]</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-calculator" style="color:mediumpurple"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Net</span>
+                            <h3 class="card-title text-nowrap mb-2">@statistics["N"]</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-archive" style="color:steelblue"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Toplam</span>
+                            <h3 class="card-title text-nowrap mb-2">@(statistics["B"] + statistics["D"] + statistics["Y"])</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <i class="bx bx-md bx-stopwatch" style="color:teal"></i>
+                                </div>
+                            </div>
+                            <span class="fw-semibold d-block mb-1">Süre</span>
+                            <h3 class="card-title text-nowrap mb-2">@(Math.Round((Model.Endtime - Model.Starttime).TotalMinutes, 2)) Dakika</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <i class="bx bx-md bx-award" style="color:darkslategrey"></i>
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Cevaplar</span>
+                    <h3 class="card-title mb-2">@ViewData["Answers"]</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <i class="bx bx-md bx-file-find" style="color:darkorange"></i>
+                        </div>
+                    </div>
+                    <span class="fw-semibold d-block mb-1">Cevaplarınız</span>
+                    <h3 class="card-title mb-2">@Model.Answers</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-header">Sorular</h5>
+                </div>
+                <div class="card-body">
+                    <div id="adobe-dc-exam-view" class="mb-3" style="height: 700px"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-header">Çözümler</h5>
+                </div>
+                <div class="card-body">
+                    <div id="adobe-dc-answer-view" class="mb-3" style="height: 700px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>@{
+        
+    }
+    @{
+        if ((ViewData["IsDevelopment"] ?? false).Equals(true))
+        {
+            <script type="text/javascript">
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "6a908ba6131f43c4b926c02af55c1ae2", divId: "adobe-dc-exam-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://localhost:7112/assets/exams/@ViewData["ExamPdf"]" } },
+                        metaData: { fileName: "@ViewData["ExamPdf"]" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "6a908ba6131f43c4b926c02af55c1ae2", divId: "adobe-dc-answer-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://localhost:7112/assets/answers/@ViewData["AnswerPdf"]" } },
+                        metaData: { fileName: "@ViewData["AnswerPdf"]" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+            </script>
+        }
+        else
+        {
+            <script type="text/javascript">
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "8747a996d06b4ad0a1e09af95261450e", divId: "adobe-dc-exam-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://sinav.yenitrendakademi.com/assets/exams/@ViewData["ExamPdf"]" } },
+                        metaData: { fileName: "@ViewData["ExamPdf"]" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "8747a996d06b4ad0a1e09af95261450e", divId: "adobe-dc-answer-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://sinav.yenitrendakademi.com/assets/answers/@ViewData["AnswerPdf"]" } },
+                        metaData: { fileName: "@ViewData["AnswerPdf"]" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+            </script>
+        }
+    }
+}

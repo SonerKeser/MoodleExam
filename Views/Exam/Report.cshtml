@@ -1,0 +1,71 @@
+﻿@model List<Userexam>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Rapor";
+}
+@section Head {
+    <link href="~/libs/data-tables/datatables.min.css" rel="stylesheet" />
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <h5 class="card-header">Sonuçlar</h5>
+        <div class="table-responsive text-nowrap" style="padding: 0 25px 25px 25px">
+            <table id="exams">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sonuç</th>
+                        <th>Süre</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @{
+                        foreach (var exam in Model)
+                        {
+                            <tr>
+                                <td><strong>@exam.Id</strong></td>
+                                <td>@exam.Score.Replace("|", " ").Replace("D", "Doğru").Replace("Y", "Yanlış").Replace("B", "Boş").Replace("N", "Net")</td>
+                                <td>@(Math.Round((exam.Endtime - exam.Starttime).TotalMinutes, 2)) Dakika</td>
+                                <td>
+                                    <button id="@exam.Userid" class="btn btn-info" onclick="btnOgrenciSorgula(this.id)">
+                                        <span class="tf-icons bx bx-book-open"></span>&nbsp; Öğrenci Bilgileri
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+</div>
+@section Scripts {
+    <script src="~/libs/data-tables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#exams").DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/tr.json',
+                },
+            });
+        });
+        function btnOgrenciSorgula(id) {
+            $.ajax({
+                url: 'https://ue.yenitrendakademi.com/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=core_user_get_users_by_field&wstoken=@(ViewData["token"])&field=id&values[0]=' + id,
+                type: 'GET',
+                success: function (data) {
+                    var result = JSON.stringify(data);
+                    var data = JSON.parse(result);
+                    alert("Ad Soyad: " + data[0].fullname + "\nE-posta: " + data[0].email);
+                },
+                error: function (xhr, status, error) {
+                    console.log('Kullanıcı sorgulama işlemi başarısız oldu: ' + error);
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,92 @@
+﻿@model List<Exam>
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+@section Head {
+    <link href="~/libs/data-tables/datatables.min.css" rel="stylesheet" />
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Basic Bootstrap Table -->
+    <div class="card">
+        <div class="table-responsive text-nowrap" style="padding: 25px 25px 25px 25px">
+            <table id="exams">
+                <thead>
+                    <tr>
+                        <th>Sınav Adı</th>
+                        <th>Zaman Sınırı</th>
+                        <th>Erişime Açılma Zamanı</th>
+                        <th>Erişime Kapanma Zamanı</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @{
+                        foreach (var exam in Model)
+                        {
+                            <tr>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>@exam.Name</strong></td>
+                                <td>@exam.Timelimit Dakika</td>
+                                <td>@exam.Firstaccesstime</td>
+                                <td>@exam.Lastaccesstime</td>
+                                <td>
+                                    @{
+                                        if(ViewData[exam.Id.ToString()] != null)
+                                        {
+                                            <span class="badge bg-label-info me-1">Tamamlandı</span>
+                                        }
+                                        else
+                                        {
+                                            if (exam.Lastaccesstime > DateTime.Now && exam.Firstaccesstime < DateTime.Now)
+                                            {
+                                                <span class="badge bg-label-success me-1">Aktif</span>
+                                            }
+                                            else if (exam.Lastaccesstime < DateTime.Now)
+                                            {
+                                                <span class="badge bg-label-danger me-1">Erişime Kapalı</span>
+                                            }
+                                            else if (exam.Firstaccesstime > DateTime.Now)
+                                            {
+                                                <span class="badge bg-label-primary me-1">Erişime Açılacak</span>
+                                            }
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        if (ViewData[exam.Id.ToString()] != null)
+                                        {
+                                            <a class="btn btn-info" href="/Exam/Result/@ViewData[exam.Id.ToString()]">
+                                                <span class="tf-icons bx bx-book-open"></span>&nbsp; Sonuç
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-primary" href="/Exam/Start/@exam.Id?UserId=@ViewData["UserId"]">
+                                                <span class="tf-icons bx bx-edit-alt"></span>&nbsp; Sınavı Başlat
+                                            </a>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--/ Basic Bootstrap Table -->
+</div>
+@section Scripts {
+    <script src="~/libs/data-tables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#exams").DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/tr.json',
+                },
+            });
+        });
+    </script>
+}

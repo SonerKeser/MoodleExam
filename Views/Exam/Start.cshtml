@@ -1,0 +1,173 @@
+﻿@model Exam
+@{
+    TimeSpan diff = DateTime.Now.AddMinutes(Model.Timelimit).ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    var timestamp = Math.Floor(diff.TotalSeconds);
+    var questionCount = Model.Answers.Split('-').Count();
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Basic Layout -->
+    <div class="row">
+        <div class="col-xl-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div id="flipdown" class="flipdown"></div>
+                </div>
+                <div class="card-body">
+                    <div id="adobe-dc-view" class="mb-3" style="height: 700px"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <form id="exam" method="post" asp-action="End">
+                <div class="card overflow-hidden mb-4" style="height: 900px">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="text-muted float-end">
+                            <span name="answerCount" class="badge bg-label-primary">Cevaplananlar: 0</span>
+                            <span name="nullCount" class="badge bg-label-secondary">Boş Bırakılanlar: @questionCount</span>
+                        </div>
+                    </div>
+                    <div class="card-body" id="vertical-example">
+                        <input class="form-control" type="hidden" value="@ViewData["UserId"]" id="UserId" name="UserId" />
+                        <input class="form-control" type="hidden" value="@Model.Id" id="ExamId" name="ExamId" />
+                        @{
+                            for (int i = 1; i <= questionCount; i++)
+                            {
+                                <div class="mb-3 row">
+                                    <div class="col-md-12">
+                                        <label class="col-md-1 col-form-label" style="font-size: 16px">@i.</label>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="@(i)"
+                                                   id="@(i)"
+                                                   value="A"
+                                                   onchange="answerAndNullCountChange()"
+                                                   ondblclick="answerToNull(this)" />
+                                            <label class="form-check-label" for="@(i)">A</label>
+                                        </div>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="@(i)"
+                                                   id="@(i)"
+                                                   value="B"
+                                                   onchange="answerAndNullCountChange(this)"
+                                                   ondblclick="answerToNull(this)" />
+                                            <label class="form-check-label" for="@(i)">B</label>
+                                        </div>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="@(i)"
+                                                   id="@(i)"
+                                                   value="C"
+                                                   onchange="answerAndNullCountChange(this)"
+                                                   ondblclick="answerToNull(this)" />
+                                            <label class="form-check-label" for="@(i)">C</label>
+                                        </div>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="@(i)"
+                                                   id="@(i)"
+                                                   value="D"
+                                                   onchange="answerAndNullCountChange(this)"
+                                                   ondblclick="answerToNull(this)" />
+                                            <label class="form-check-label" for="@(i)">D</label>
+                                        </div>
+                                        <div class="form-check form-check-inline mt-3">
+                                            <input class="form-check-input"
+                                                   type="radio"
+                                                   name="@(i)"
+                                                   id="@(i)"
+                                                   value="E"
+                                                   onchange="answerAndNullCountChange(this)"
+                                                   ondblclick="answerToNull(this)" />
+                                            <label class="form-check-label" for="@(i)">E</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Sınavı Bitir</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Head {
+    <link rel="stylesheet" href="~/libs/flipdown/flipdown.min.css" />
+    <script src="~/assets/js/extended-ui-perfect-scrollbar.js"></script>
+}
+@section Scripts {
+    <script src="~/libs/flipdown/flipdown.min.js"></script>
+    <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>
+    @{
+        if ((ViewData["IsDevelopment"] ?? false).Equals(true))
+        {
+            <script type="text/javascript">
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "6a908ba6131f43c4b926c02af55c1ae2", divId: "adobe-dc-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://localhost:7112/assets/exams/@Model.ExamPdf" } },
+                        metaData: { fileName: "@Model.ExamPdf" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+            </script>
+        }
+        else
+        {
+            <script type="text/javascript">
+                document.addEventListener("adobe_dc_view_sdk.ready", function () {
+                    var adobeDCView = new AdobeDC.View({ clientId: "8747a996d06b4ad0a1e09af95261450e", divId: "adobe-dc-view", locale: "tr-TR" });
+                    adobeDCView.previewFile({
+                        content: { location: { url: "https://sinav.yenitrendakademi.com/assets/exams/@Model.ExamPdf" } },
+                        metaData: { fileName: "@Model.ExamPdf" }
+                    }, { defaultViewMode: "FIT_WIDTH", showAnnotationTools: false, showDownloadPDF: false, showPrintPDF: false });
+                });
+            </script>
+        }
+    }
+    <script type="text/javascript">
+        var flipdown = new FlipDown(@timestamp, {
+            theme: 'dark',
+            headings: ["Gün", "Saat", "Dakika", "Saniye"]
+        });
+        flipdown.start();
+        flipdown.ifEnded(() => {
+            document.getElementById('exam').submit();
+        });
+        function answerToNull(radioButton) {
+            if (radioButton.checked) {
+                radioButton.checked = false;
+                answerAndNullCountChange();
+            }
+        }
+        function answerAndNullCountChange() {
+            var answerCount = 0;
+            var nullCount = 0;
+            for (var i = 1; i <= @questionCount; i++) {
+                var checked = false;
+                for (var j = 0; j < 5; j++) {
+                    checked = document.getElementsByName(i)[j].checked;
+                    if (checked) {
+                        break;
+                    }
+                }
+                if (checked) {
+                    answerCount++;
+                } else {
+                    nullCount++;
+                }
+                document.getElementsByName('answerCount')[0].textContent = "Cevaplananlar: " + answerCount;
+                document.getElementsByName('nullCount')[0].textContent = "Boş Bırakılanlar: " + nullCount;
+            }
+        }
+    </script>
+}
